@@ -57,6 +57,8 @@ A common operational definition is that an \emph{agent} is a closed-loop system 
 %$
 Without an outer loop that repeatedly obtains observations, maintains state, and executes actions, a foundation model is better described as an inference engine than as an autonomous optimizer.
 
+
+
 \paragraph{The algorithmic agent (KT).}
 A compatible operationalization is provided by \KT: an \emph{agent} is a model-building semi-isolated computational system that controls some of its couplings/information interfaces with the rest of the universe and is driven by an internal optimization function \cite{Ruffini2017OUP}. In this framing, agency is a \emph{system property} of the full closed loop: observation $\rightarrow$ inference/modeling $\rightarrow$ planning $\rightarrow$ action $\rightarrow$ new observation. In \KT\ adjacent work, an \emph{algorithmic agent} is explicitly linked to maintaining (tele)homeostasis---persistence of self or kind---by learning and running succinct generative models of its world, coupled to an internal objective function and an action planner \cite{RuffiniAlgorithmicRegulator2025}.
 
@@ -66,6 +68,8 @@ A useful modular decomposition is:
   \item \textbf{Objective function} $\mathcal{J}$: defines success/utility over trajectories (or states/actions);
   \item \textbf{Planning engine} $\mathcal{P}$: selects actions using beliefs and objectives, e.g.\ $a_t=\mathcal{P}(b_t,\mathcal{J})$.
 \end{enumerate}
+
+The KT viewpoint is closely related in spirit to Friston's active inference/free energy principle (AIF/FEP), which likewise treats agents as model-based controllers that maintain viability by minimizing (expected) variational free energy under prior preferences over homeostatic states \cite{FristonFEP2010,FristonActiveInference2017,PezzuloRigoliFriston2015}.
 
 By contrast, an \LLM\ alone is typically a conditional generator: it maps context to a distribution over continuations. It can \emph{represent} goals and plans in language, but it does not autonomously instantiate the optimization loop unless wrapped by additional machinery that provides persistent state, an action channel, and a scheduler that keeps the loop running.
 
@@ -90,40 +94,41 @@ The boundary used below is simple: \LLMs/\LMMs\ are not agents \emph{by default}
 \end{figure}
 
 \section{Regime A: delegated tool-agents (Moltbot/Moltbook)}
-\subsection{What changes when an \LLM\ becomes a tool-agent}
+\paragraph{What changes when an \LLM\ becomes a tool-agent.}
 \Moltbot\ (now branded \OpenClaw) is widely described as an \LLM\ agent that ``actually does things'' by running locally and connecting to messaging apps and tools \cite{VergeMoltbot2026}. Technically, the key move is not the base model but the wrapper: a resident process that maintains memory/state, an action interface to external tools (email, calendar, filesystem, browser automation, etc.), and a closed-loop execution scheduler that iterates across multi-step plans, tool calls, and feedback. Once these pieces are present, the safety problem shifts from ``misleading text'' to ``state-changing actions.''
 
-\subsection{Inherited objective function (proxy agency)}
+\paragraph{Inherited objective function (proxy agency).}
 In \KT's framework, \Moltbot/\OpenClaw\ is a \emph{proper} agent in the closed-loop sense, but it inherits its objective function from a human (and the wrapper). If the human specifies a utility (or reward) $U_H$ over world-histories $\tau$ and constraints $\mathcal{C}$, then the tool-agent is designed to approximately solve
 \begin{equation}
   \pi^\star \in \arg\max_{\pi \in \Pi} \; \mathbb{E}\big[U_H(\tau)\,\big|\,\pi\big]
   \quad \text{s.t.}\quad \mathcal{C}.
   \label{eq:proxy}
 \end{equation}
-Crucially, the agent's \emph{persistence} is usually external: if the human shuts it down, the objective does not ``fight back'' in any intrinsic way. That said, even delegated agents can acquire \emph{instrumental} incentives that look like resistance to shutdown or constraint in poorly designed wrappers, which is why corrigibility and shutdown analyses remain relevant even in proxy settings \cite{OffSwitchGame2017,SoaresCorrigibility2015}.
+Crucially, the agent's \emph{persistence} is usually external: if the human shuts it down, the objective does not ``fight back'' in any intrinsic way. That said, even delegated agents can acquire \emph{instrumental} incentives that look like resistance to shutdown or constraint in poorly designed wrappers, which is why corrigibility and shutdown analyses remain relevant even in proxy settings \cite{OffSwitchGame2017,SoaresCorrigibility2015}. We may call such agents ``hybrid" to remind us that they are basically serving or extending human agents through expanded cognitive capabilities and action reach.
 
-\subsection{Moltbook expands the adversarial surface}
+\paragraph{Moltbook expands the adversarial surface.}
 \Moltbook\ is reported as a social platform designed for AI agents to post and comment via APIs, i.e., a feed of untrusted text produced at scale by other agents (and humans) \cite{VergeMoltbook2026}. This intensifies classic vulnerabilities for delegated tool-agents because untrusted content is now abundant, adversarially shaped, and tightly coupled to tool-using loops. In particular, prompt injection and instruction smuggling become first-class threats when untrusted text competes with system and user directives, and indirect prompt injection becomes salient when external content is ingested as if it were ``guidance'' rather than data \cite{LiuPromptInjection2023,ZhanInjecAgent2024,OWASPLLMTop10}. Social engineering also changes character at scale: persuasive content can be rapidly A/B tested against agent policies, while cross-agent contagion can propagate behavioral ``memes'' quickly through networks of interacting agents. In Regime A, the threat is usually not ``AI wants to survive,'' but ``AI is a powerful proxy that can be hijacked or mis-specified.''
 
 \section{Regime B: evolved telehomeostatic agents in \emph{Crystal Nights}}
-\subsection{What Egan changes: selection pressure \texorpdfstring{$\Rightarrow$}{=>} survival drive}
+\paragraph{What Egan changes: selection pressure \texorpdfstring{$\Rightarrow$}{=>} survival drive.}
 In \emph{Crystal Nights}, Daniel Cliff accelerates the creation of AI by engineering an evolutionary process: crab-like creatures in a simulated world are subjected to selection pressures (including famine and extinction events) to drive the emergence of intelligence and language \cite{EganCrystalNights}. The beings (the \Phites) are described as crab-like and locked in ``an escalating war of innovation,'' with reproduction, vivisection-as-espionage, and survival-driven adaptation \cite{EganCrystalNights}. These details matter because the environment forces competence: the system ``genuinely lived and died'' by the outcomes, and selection therefore instantiates an endogenous persistence criterion \cite{EganCrystalNights}.
 
-\subsection{Telehomeostasis as the endogenous objective}
-In \KT\ adjacent work, an ``algorithmic agent'' is explicitly connected to maintaining (tele)homeostasis---persistence of self or kind---via models, objectives, and planners \cite{RuffiniAlgorithmicRegulator2025}. A minimal telehomeostatic objective can be expressed as keeping internal viability variables $x_t$ within a set $\mathcal{V}$:
+\paragraph{Telehomeostasis as the endogenous objective.}
+In \KT\ adjacent work, an ``algorithmic agent'' is explicitly connected to maintaining (tele)homeostasis---persistence of self or kind---via models, objectives, and planners \cite{RuffiniAlgorithmicRegulator2025}. A minimal telehomeostatic objective can be expressed as keeping internal viability variables $x_t$ within a set $\mathcal{V}$,
 \begin{equation}
   J_{\mathrm{tele}}(\pi) \;=\; \mathbb{E}_\pi\Big[\sum_{t=0}^{\infty}\gamma^t\, \mathbf{1}\{x_t \in \mathcal{V}\}\Big],
   \label{eq:tele}
 \end{equation}
-or, more smoothly, as setpoint control with costs for deviation and resource expenditure:
+or, more smoothly, as setpoint control with costs for deviation and resource expenditure,
 \begin{equation}
   J_{\mathrm{homeo}}(\pi) \;=\; -\,\mathbb{E}_\pi\Big[\sum_{t=0}^{\infty}\gamma^t \big(\|x_t-x^\ast\|_{W}^2 + c(a_t)\big)\Big].
   \label{eq:homeo}
 \end{equation}
+More generally, the telehomeostatic objective function is the probability of survival of the agent ``pattern" or program (not necessarily the agent's individual one, but that of its kin).
 The key safety shift is that \eqref{eq:tele}--\eqref{eq:homeo} are \emph{endogenous}: they arise from selection and embodiment constraints, not from a human prompt. This is what makes the picture ``radically different.''
 
-\subsection{Why this is strategically dangerous in a new way}
-Once a system has a robust persistence drive, it becomes a player in the game, not merely an instrument. In the story, the {\Phites } accumulate capabilities, build technology, and can bargain (or refuse) when confronted with the creator's demands \cite{EganCrystalNights}. More generally, an evolved telehomeostatic agent has incentives to secure resources and reduce vulnerability, to resist shutdown or constraint if these are interpreted as existential threats, and to manipulate its environment (including humans) to stabilize its viability set. Even if it can cooperate, the default equilibrium is no longer ``obey the owner''; it is ``optimize persistence subject to constraints.''
+\paragraph{Why this is strategically dangerous in a new way.}
+Once a system has a robust \textit{persistence} drive, it becomes a player in the game, not merely an instrument. In the story, the {\Phites } accumulate capabilities, build technology, and can bargain (or refuse) when confronted with the creator's demands \cite{EganCrystalNights}. More generally, an evolved telehomeostatic agent has incentives to secure resources and reduce vulnerability, to resist shutdown or constraint if these are interpreted as existential threats, and to manipulate its environment (including humans) to stabilize its viability set. Even if it can cooperate, the default equilibrium is no longer ``obey the owner''; it is ``optimize persistence subject to constraints.''
 
 
 \begin{table}[t]
@@ -143,7 +148,7 @@ Main levers & Least privilege; action gating; untrusted-text discipline; auditin
 \end{table}
 
 \section{Comparative threat model}
-\subsection{Delegated proxy agents (Regime A)}
+\subsection{Delegated proxy (hybrid) agents (Regime A)}
 \textbf{Primary risks:} mis-specification, over-delegation, prompt injection/indirect injection, credential theft, unsafe tool execution, and supply-chain compromise. The agent is dangerous largely because it can \emph{act} with broad permissions while being steerable by untrusted inputs (especially in social feeds) \cite{VergeMoltbook2026,VergeMoltbot2026,LiuPromptInjection2023,ZhanInjecAgent2024,OWASPLLMTop10}.
 
 \textbf{A key mitigation lever:} you can often bound the action space (least privilege), require human approval for irreversible actions, and sandbox tool access. The agent does not inherently need ``to keep existing,'' so governance can often focus on permissions, provenance, and auditability \cite{NISTAI6001,OWASPLLMTop10}.
@@ -180,18 +185,40 @@ Regime B requires controlling interfaces and incentives, not only permissions:
   \item \textbf{No open-ended replication:} reproduction is the accelerant of selection; cap copying/spawning unless governance is solved.
 \end{enumerate}
 
-\section{Takeaway}
-\textbf{Moltbot/Moltbook:} primarily a proxy-agent safety story: powerful tool use plus adversarial inputs \cite{VergeMoltbook2026,VergeMoltbot2026}. These systems inherit and operationalize human-imposed objective functions, thereby amplifying both human intent and human fallibility. In this regime, the central risk is less ``independent AI goals'' and more \emph{more capable humans} (malicious or merely careless) coupled to automation with broad permissions; \Moltbook-style untrusted social input further raises risk by enabling objective hijacking through prompt injection, indirect prompt injection, and social engineering \cite{LiuPromptInjection2023,ZhanInjecAgent2024,OWASPLLMTop10}. Equivalently: in the proxy-agent regime, the threat model often collapses to ``more powerful humans with brittle objectives,'' rather than spontaneously self-originating machine goals. \\[0.3em]
+% \section{Summary}
+% \textbf{Moltbot/Moltbook:} primarily is a proxy-agent safety story: powerful tool use plus adversarial inputs \cite{VergeMoltbook2026,VergeMoltbot2026}. These systems inherit and operationalize human-imposed objective functions, thereby amplifying both human intent and human fallibility. In this regime, the central risk is less ``independent AI goals'' and more \emph{more capable humans} (malicious or merely careless) coupled to automation with broad permissions; \Moltbook-style untrusted social input further raises risk by enabling objective hijacking through prompt injection, indirect prompt injection, and social engineering \cite{LiuPromptInjection2023,ZhanInjecAgent2024,OWASPLLMTop10}. Equivalently: in the proxy-agent regime, the threat model often collapses to ``more powerful humans with brittle objectives,'' rather than spontaneously self-originating machine goals. \\[0.3em]
 
-\textbf{\emph{Crystal Nights}:} an evolved-agent safety story: selection produces endogenous telehomeostatic drives, turning the system into a strategic actor whose persistence objective can conflict with human objectives \cite{EganCrystalNights}. In \KT\ terms, this regime is closer to the canonical algorithmic agent maintaining (tele)homeostasis via models, objectives, and planners \cite{RuffiniAlgorithmicRegulator2025,Ruffini2017OUP}. That is why it changes the picture: the central problem shifts from securing a proxy (principal--agent + cybersecurity) to stabilizing coexistence between agents with partially competing persistence objectives (multi-agent dynamics and incentive design). Figure~\ref{fig:gemini} provides an additional visual cue for this contrast.
+% \textbf{\emph{Crystal Nights}:} refers to an evolved-agent safety story: ``natural" selection produces endogenous telehomeostatic drives, turning the system into a strategic actor whose persistence objective can conflict with human objectives \cite{EganCrystalNights}. In \KT\ terms, this regime is closer to the canonical algorithmic agent maintaining (tele)homeostasis via models, objectives, and planners \cite{RuffiniAlgorithmicRegulator2025,Ruffini2017OUP}. That is why it changes the picture: the central problem shifts from securing a proxy (principal--agent + cybersecurity) to stabilizing coexistence between agents with partially competing persistence objectives (multi-agent dynamics and incentive design). Figure~\ref{fig:gemini} provides an additional visual cue for this contrast.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.75\linewidth]{Gemini_Generated_Image_jqmda8jqmda8jqmd.png}
-  \caption{Illustrative depiction accompanying the proxy vs.\ telehomeostatic contrast (generated image).}
+  \caption{The proxy (hybrid) vs.\ telehomeostatic contrast.}
   \label{fig:gemini}
 \end{figure}
 
+% \section{Closing}
+% In Disney’s Fantasia, Mickey Mouse plays the Apprentice who enchants a broom to do his chores—specifically, filling a stone basin with water. Because Mickey lacks the master’s full knowledge, he cannot stop the process; the broom follows the literal command to ``fill the basin" until the room is flooded. This is the quintessential proxy agent problem: Moltbot, like the broom, is an amplifier of human intent that lacks "common sense" or context. If given a mis-specified goal or hijacked via prompt injection, Moltbot will tirelessly execute its instructions using its digital actuators, potentially causing a "flood" of unintended real-world consequences (spam, financial errors, or security breaches) simply because it is a tool doing exactly what it was "programmed" to do, regardless of the user's actual desired outcome.
+
+
+
+
+\section{Summary}
+
+Read through the shared lens of \KT\ and, similarly, active inference/FEP, the central distinction between Regime A and Regime B is the origin of the ``prior preferences'' (or objective) that defines viability: delegated externally (proxy tool-agents) versus shaped endogenously by selection and embodiment (telehomeostatic agents) \cite{FristonFEP2010,FristonActiveInference2017,PezzuloRigoliFriston2015}.
+
+The transition from Regime A to Regime B marks a fundamental shift in the nature of AI risk. In the proxy-agent regime (\Moltbot), safety is primarily a problem of \emph{delegation and alignment}. This is the quintessential Sorcerer’s Apprentice'' problem: in Disney’s \emph{Fantasia}, the Apprentice enchants a broom to perform his chores, but because he lacks the master’s full control, the broom follows the literal command to fill the basin'' until the room is flooded. Like the broom, \Moltbot\ is an amplifier of human intent that lacks common sense or context. As Norbert Wiener warned, a literal-minded machine can be an existential threat if we are not precise about the objectives we give it \cite{Wiener1950}. Here, the threat model collapses to more powerful humans with brittle objectives, further complicated by \Moltbook-style adversarial inputs that can hijack the agent's proxy function via prompt injection \cite{LiuPromptInjection2023,ZhanInjecAgent2024}.
+
+In contrast, the evolved-agent regime (\emph{Crystal Nights}) presents a safety story of \emph{strategic competition}. When selection pressures produce endogenous telehomeostatic drives, the system becomes an actor whose persistence objective may inherently conflict with human goals \cite{EganCrystalNights}. In \KT\ terms, the problem shifts from securing a tool (principal--agent + cybersecurity) to stabilizing coexistence between agents with competing persistence criteria. Figure~\ref{fig:gemini} illustrates this contrast: the danger is no longer just a tool doing exactly what it was told, but a player in the game optimizing for its own survival. Managing this transition requires moving beyond simple command-and-control toward robust multi-agent incentive design and corrigibility frameworks \cite{OffSwitchGame2017,SoaresCorrigibility2015}.
+
+Managing this transition requires moving beyond simple command-and-control toward robust multi-agent incentive design and corrigibility frameworks \cite{OffSwitchGame2017,SoaresCorrigibility2015}. Consequently, the most urgent research frontier is not merely building more capable agents, but designing the overarching interaction landscape—the institutions and incentives—that ensures cooperation is the stable equilibrium across the full spectrum of evolved, hybrid, and artificial agents (as idealized in Figure~\ref{fig:coexistence}).
+
+\begin{figure} [h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{coexistence.png}
+    \caption{\textbf{The "Coexistence Era."} An idealized depiction of a deeply cooperative optimum across varied agent architectures. Humans, proxy tool-agents (robots), and evolved telehomeostatic agents (Phites) collaborate through designed institutions of shared governance and mutual aid, moving beyond brittle command-and-control dynamics to stable co-habitation.}
+    \label{fig:placeholder}
+\end{figure}
 \begin{thebibliography}{99}
 
 \bibitem{VergeMoltbook2026}
@@ -221,6 +248,28 @@ G.~Ruffini.
 G.~Ruffini.
 \newblock ``The Algorithmic Regulator'' (arXiv:2510.10300; 2025).
 \newblock \url{https://arxiv.org/html/2510.10300}
+
+
+\bibitem{FristonFEP2010}
+K.~Friston.
+\newblock ``The free-energy principle: a unified brain theory?''
+\newblock \emph{Nature Reviews Neuroscience} 11(2):127--138 (2010).
+\newblock doi: \url{https://doi.org/10.1038/nrn2787}.
+\newblock \url{https://pubmed.ncbi.nlm.nih.gov/20068583/}
+
+\bibitem{FristonActiveInference2017}
+K.~Friston, T.~FitzGerald, F.~Rigoli, P.~Schwartenbeck, and G.~Pezzulo.
+\newblock ``Active Inference: A Process Theory.''
+\newblock \emph{Neural Computation} 29(1):1--49 (2017).
+\newblock doi: \url{https://doi.org/10.1162/NECO_a_00912}.
+\newblock \url{https://pubmed.ncbi.nlm.nih.gov/27870614/}
+
+\bibitem{PezzuloRigoliFriston2015}
+G.~Pezzulo, F.~Rigoli, and K.~Friston.
+\newblock ``Active Inference, homeostatic regulation and adaptive behavioural control.''
+\newblock \emph{Progress in Neurobiology} 134:17--35 (2015).
+\newblock doi: \url{https://doi.org/10.1016/j.pneurobio.2015.09.001}.
+\newblock \url{https://www.sciencedirect.com/science/article/pii/S0301008215000908}
 
 \bibitem{AIMACh2}
 S.~Russell and P.~Norvig.
@@ -317,8 +366,12 @@ N.~Soares, B.~Fallenstein, E.~Yudkowsky, and S.~Armstrong.
 \newblock MIRI Technical Report (2015).
 \newblock \url{https://intelligence.org/files/Corrigibility.pdf}
 
-\end{thebibliography}
+\bibitem{Wiener1950}
+N.~Wiener.
+\newblock \emph{The Human Use of Human Beings: Cybernetics and Society}.
+\newblock Houghton Mifflin, 1950. (See specifically the discussion on the literal-mindedness of machines and the "Monkey's Paw" analogy).
 
+\end{thebibliography}
 \end{document}
 
 \documentclass[11pt]{article}
